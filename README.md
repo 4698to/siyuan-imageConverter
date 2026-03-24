@@ -1,149 +1,53 @@
-# **思源笔记插件-siyuan-imageconverter**
+# siyuan-imageConverter
 
-**注意事项: 初次使用插件时请重启思源或切换页面，启用压缩功能同理，否则会存在路径出错的问题**
+[中文文档](./README_zh_CN.md)
 
-# 更新日志
+`siyuan-imageConverter` is a SiYuan plugin for batch processing image resources in the current document. It supports image compression/conversion and structured archiving to keep your assets organized.
 
+## Features
 
-## v0.1.2
+- Batch process images in the current document
+- Optional image compression (`webp` / `avif`)
+- Resource archiving by notebook + document path
+- Optional deletion of original images
+- Bilingual UI (`zh_CN` / `en_US`)
+- Local resources only (skip `http/https/data/file://`)
 
-### 补充
+## How To Use
 
-- 完善设置开关描述信息
+1. Open any document and click the plugin icon in the top-right corner.
+2. Choose an action from the menu:
+   - `Convert Images`: Run conversion/compression based on current settings.
+   - `Archive Images`: Archive only, without compression.
 
-## v0.1.1
+## Settings
 
-### 补充
+- `Enable Image Compression`  
+  When enabled, images are compressed before being written back or archived. When disabled, only organization/archiving is performed.
 
-- 补充插件信息
+- `Output Format`  
+  Compressed output format: `webp` or `avif`.
 
+- `Resource Archiving`  
+  When enabled, images are archived into `assets/...` based on notebook + document path.  
+  When disabled, converted images are saved in the original image directory.
 
-## v0.1.0
+- `Delete Original Images`  
+  Controls whether original images are deleted after processing.  
+  When `Resource Archiving` is enabled, this option is locked on (archiving is effectively a move operation).
 
-### 改变
+## Notes
 
-- 重构了批量转换功能的代码，图片批量转换更稳定
-- 暂时砍掉了粘贴图片转换的功能，经过测试发现会影响到图片拖进思源的操作，会导致思源崩溃，暂时没有找到好的解决办法
+- Processing scope is the currently active document.
+- Back up important assets before running batch operations.
+- After first install or major setting changes, switch documents once before batch processing.
 
-**!!如果想使用粘贴转换请使用上一个版本!!**
+## Changelog
 
+See [CHANGELOG.md](./CHANGELOG.md).
 
-## v0.0.8
+## Credits
 
-### 优化
-
-- 优化图片插入时文档树路径与思源页面标题路径保存不一致的问题，如果标题中出现Windows文件命名规则中的非法字符，则替换为_
-
-
-## v0.0.7
-
-### 优化
-
-- 优化批量转换时部分图片无法定位的问题，需要注意的是图片的描述内容不要出现包含点的图片后缀，否则插件会识别图片错误
-- 修复图片压缩功能开关，图片分类存放但不压缩
-
-**如果无法批量转换的情况，可以打开开发者工具插件图片路径是否正确，如果有其他情况可以带上截图提交issues!**
-
-
-## v0.0.6
-
-### 添加
-- 添加图片压缩功能开关，可以自行选择压缩或不压缩
-
-
-### 声明
-- 图片分类存放是插件的初衷之一，不会为其添加开关设置，压缩功能可以自行选择
-
-
-## v0.0.5
-
-### 新功能
-
-- 添加批量转换页面中图片的功能：需要注意的是刚插入多张图片时需要切换页面，让插件知道增加了什么图片，最后点击软件右上角的微笑图标进行批量转换
-
-### 问题
-
-- 对于上一个版本发现的问题还没有找到办法修复，详细理解问题：刚编写完内容时思源笔记还没有同步内容到后端，导致插件不知道刚才输入了什么，所以刚编写完内容时需要等待思源笔记完成索引创建后再粘贴单张图片
-
-> ![image](https://github.com/user-attachments/assets/3ba0435a-f559-438a-8621-922a3c75750b)
-
-
-## v0.0.4
-
-**可以文本-图片块覆盖中原有的图片为新的压缩处理图片**
-**更好的适配插入图片的位置，如：在新块中粘贴、在不含图片的文本块中粘贴、在含有图片的文本块中粘贴**
-
-**修复覆盖原有图片时会出现处理前后的图片同时出现的问题**
-
-**!!! 在编写内容时不要立即接着粘贴图片，否则会出现图片自动跳到其他地方的情况 !!!**
-
-
-## v0.0.3
-
-**修复：图片插入到含有文本块的覆盖问题，会自动将图片插入到文本块的子块，但不想放在同一个块中需要将光标移至新块再粘贴**
-**添加：添加avif压缩格式，可以在插件设置中选择**
-
-
-## v0.0.2
-
-**修复启动思源时打开的页面不触发图片压缩**
-**修复安装插件时启用不运行**
-**补充插件信息**
-！！！**随手测试发现存在小问题，图片不能插入在有文本的块中，否则会导致原文本被覆盖**！！！
-
-
-## v0.0.1
-
-**实现功能:**
-- 粘贴插入图片到页面中会自动压缩为webp格式
-- 上传资源会根据文档树路径分类存放
-- 修复内测版插入图片会使插件重载的问题
-- 支持图片格式：png/jpg/jepg/webp
-
-
-## 该版本缺点:
-- 打开思源笔记时打开的页面不生效，需要切换页面后才会
-
-
-> 作用：使用思源笔记编写文档时，通过粘贴或拖拽的方式将图片插入到页面中，会自动将插入的图片进行压缩，压缩完成后会将压缩图片插入页面中，压缩图片的文件格式为`[webp|avif]`，同时压缩的图片会根据文档树进行分类存放
-
-
-
-## **插件优点**
-
-- 优化思源笔记的资源图片管理方式，将插入的图片根据文档树的路径保存，避免大量资源文件堆积在assets目录下，实现根据文档树路径管理资源文件
-- webp格式对与Android设备同步友好，避免手机相册中堆积图片资源文件
-
-
-
-## **插件缺点**
-
-- 插件目前仅实现了`[jpg|jpeg|png]`四种图片格式的压缩，且压缩后的图片格式会保存为`[webp|avif]`，同时仅支持单张图片的上传，对多张图片的插入可以通过一键处理按钮进行压缩处理
-- 压缩率不稳定，压缩效果有时不算很理想
-
-
-
-## **参考**
-
-> [plugin-sample](https://github.com/siyuan-note/plugin-sample)
->
-> [plugin-sample-vite-svelte](https://github.com/siyuan-note/plugin-sample-vite-svelte)
->
-> [plugin-sample-vite](https://github.com/frostime/plugin-sample-vite)
->
-> [插件开发 Quick Start](https://ld246.com/article/1723732790981)
->
-> [后端API](https://github.com/siyuan-note/siyuan/blob/master/API_zh_CN.md)
->
-> [前端API](https://github.com/siyuan-note/petal/blob/main/siyuan.d.ts)
->
-> [siyuan-steve-tools](https://github.com/loonghfut/siyuan-steve-tools)
-
-## PS
-
-作者是思源笔记插件开发小白，通过几天时间的研究和查找资料才初步有了插件开发的能力，插件想法参考obsidian的[obsidian-image-converter](https://github.com/xRyul/obsidian-image-converter)，如果你觉得这个插件不错也请为我点star，如果有感兴趣的大佬，欢迎参与到插件开发中....
-
-样图示例:
-![image](https://github.com/user-attachments/assets/31342573-58fc-4147-bbdd-79205ba0ff85)
-![image](https://github.com/user-attachments/assets/781b66db-7823-4895-a4ae-4c8cd679d2bf)
+- Inspired by [obsidian-image-converter](https://github.com/xRyul/obsidian-image-converter)
+- Thanks to SiYuan plugin ecosystem and templates.
 

@@ -1,112 +1,93 @@
-# Changelog
+# Changelog | 更新日志
 
-## v0.3.5 2024-04-30
+## v0.1.3 2026-03-24
 
-* [Add `direction` to plugin method `Setting.addItem`](https://github.com/siyuan-note/siyuan/issues/11183)
-
-
-## 0.3.4 2024-02-20
-
-* [Add plugin event bus `click-flashcard-action`](https://github.com/siyuan-note/siyuan/issues/10318)
-
-## 0.3.3 2024-01-24
-
-* Update dock icon class
-
-## 0.3.2 2024-01-09
-
-* [Add plugin `protyleOptions`](https://github.com/siyuan-note/siyuan/issues/10090)
-* [Add plugin api `uninstall`](https://github.com/siyuan-note/siyuan/issues/10063)
-* [Add plugin method `updateCards`](https://github.com/siyuan-note/siyuan/issues/10065)
-* [Add plugin function `lockScreen`](https://github.com/siyuan-note/siyuan/issues/10063)
-* [Add plugin event bus `lock-screen`](https://github.com/siyuan-note/siyuan/pull/9967)
-* [Add plugin event bus `open-menu-inbox`](https://github.com/siyuan-note/siyuan/pull/9967)
+*   压缩和归档拆开，添加菜单。
+*   只处理本地图片，如果是网络图片跳过。
 
 
-## 0.3.1 2023-12-06
+## v0.1.2
 
-* [Support `Dock Plugin` and `Command Palette` on mobile](https://github.com/siyuan-note/siyuan/issues/9926)
+### 补充
 
-## 0.3.0 2023-12-05
+- 完善设置开关描述信息
 
-* Upgrade Siyuan to 0.9.0
-* Support more platforms
+## v0.1.1
 
-## 0.2.9 2023-11-28
+### 补充
 
-* [Add plugin method `openMobileFileById`](https://github.com/siyuan-note/siyuan/issues/9738)
-
-
-## 0.2.8 2023-11-15
-
-* [`resize` cannot be triggered after dragging to unpin the dock](https://github.com/siyuan-note/siyuan/issues/9640)
-
-## 0.2.7 2023-10-31
-
-* [Export `Constants` to plugin](https://github.com/siyuan-note/siyuan/issues/9555)
-* [Add plugin `app.appId`](https://github.com/siyuan-note/siyuan/issues/9538)
-* [Add plugin event bus `switch-protyle`](https://github.com/siyuan-note/siyuan/issues/9454)
-
-## 0.2.6 2023-10-24
-
-* [Deprecated `loaded-protyle` use `loaded-protyle-static` instead](https://github.com/siyuan-note/siyuan/issues/9468)
-
-## 0.2.5 2023-10-10
-
-* [Add plugin event bus `open-menu-doctree`](https://github.com/siyuan-note/siyuan/issues/9351)
-
-## 0.2.4 2023-09-19
-
-* Supports use in windows
-* [Add plugin function `transaction`](https://github.com/siyuan-note/siyuan/issues/9172)
-
-## 0.2.3 2023-09-05
-
-* [Add plugin function `transaction`](https://github.com/siyuan-note/siyuan/issues/9172)
-* [Plugin API add openWindow and command.globalCallback](https://github.com/siyuan-note/siyuan/issues/9032)
-
-## 0.2.2 2023-08-29
-
-* [Add plugin event bus `destroy-protyle`](https://github.com/siyuan-note/siyuan/issues/9033)
-* [Add plugin event bus `loaded-protyle-dynamic`](https://github.com/siyuan-note/siyuan/issues/9021)
-
-## 0.2.1 2023-08-21
-
-* [Plugin API add getOpenedTab method](https://github.com/siyuan-note/siyuan/issues/9002)
-* [Plugin API custom.fn => custom.id in openTab](https://github.com/siyuan-note/siyuan/issues/8944)
-
-## 0.2.0 2023-08-15
-
-* [Add plugin event bus `open-siyuan-url-plugin` and `open-siyuan-url-block`](https://github.com/siyuan-note/siyuan/pull/8927)
+- 补充插件信息
 
 
-## 0.1.12 2023-08-01
+## v0.1.0
 
-* Upgrade siyuan to 0.7.9
+### 改变
 
-## 0.1.11
+- 重构了批量转换功能的代码，图片批量转换更稳定
+- 暂时砍掉了粘贴图片转换的功能，经过测试发现会影响到图片拖进思源的操作，会导致思源崩溃，暂时没有找到好的解决办法
 
-* [Add `input-search` event bus to plugins](https://github.com/siyuan-note/siyuan/issues/8725)
+**!!如果想使用粘贴转换请使用上一个版本!!**
 
 
-## 0.1.10
+## v0.0.8
 
-* [Add `bind this` example for eventBus in plugins](https://github.com/siyuan-note/siyuan/issues/8668)
-* [Add `open-menu-breadcrumbmore` event bus to plugins](https://github.com/siyuan-note/siyuan/issues/8666)
+### 优化
 
-## 0.1.9
+- 优化图片插入时文档树路径与思源页面标题路径保存不一致的问题，如果标题中出现Windows文件命名规则中的非法字符，则替换为_
 
-* [Add `open-menu-xxx` event bus for plugins ](https://github.com/siyuan-note/siyuan/issues/8617)
 
-## 0.1.8
+## v0.0.7
 
-* [Add protyleSlash to the plugin](https://github.com/siyuan-note/siyuan/issues/8599)
-* [Add plugin API protyle](https://github.com/siyuan-note/siyuan/issues/8445)
+### 优化
 
-## 0.1.7
+- 优化批量转换时部分图片无法定位的问题，需要注意的是图片的描述内容不要出现包含点的图片后缀，否则插件会识别图片错误
+- 修复图片压缩功能开关，图片分类存放但不压缩
 
-* [Support build js and json](https://github.com/siyuan-note/plugin-sample/pull/8)
+**如果无法批量转换的情况，可以打开开发者工具插件图片路径是否正确，如果有其他情况可以带上截图提交issues!**
 
-## 0.1.6
 
-* add `fetchPost` example
+## v0.0.6
+
+### 添加
+- 添加图片压缩功能开关，可以自行选择压缩或不压缩
+
+
+### 声明
+- 图片分类存放是插件的初衷之一，不会为其添加开关设置，压缩功能可以自行选择
+
+
+## v0.0.5
+
+### 新功能
+
+- 添加批量转换页面中图片的功能：需要注意的是刚插入多张图片时需要切换页面，让插件知道增加了什么图片，最后点击软件右上角的微笑图标进行批量转换
+
+### 问题
+
+- 对于上一个版本发现的问题还没有找到办法修复，详细理解问题：刚编写完内容时思源笔记还没有同步内容到后端，导致插件不知道刚才输入了什么，所以刚编写完内容时需要等待思源笔记完成索引创建后再粘贴单张图片
+
+> ![image](https://github.com/user-attachments/assets/3ba0435a-f559-438a-8621-922a3c75750b)
+
+
+## v0.0.4
+
+**可以文本-图片块覆盖中原有的图片为新的压缩处理图片**
+**更好的适配插入图片的位置，如：在新块中粘贴、在不含图片的文本块中粘贴、在含有图片的文本块中粘贴**
+
+**修复覆盖原有图片时会出现处理前后的图片同时出现的问题**
+
+**!!! 在编写内容时不要立即接着粘贴图片，否则会出现图片自动跳到其他地方的情况 !!!**
+
+
+## v0.0.3
+
+**修复：图片插入到含有文本块的覆盖问题，会自动将图片插入到文本块的子块，但不想放在同一个块中需要将光标移至新块再粘贴**
+**添加：添加avif压缩格式，可以在插件设置中选择**
+
+
+## v0.0.2
+
+**修复启动思源时打开的页面不触发图片压缩**
+**修复安装插件时启用不运行**
+**补充插件信息**
+！！！**随手测试发现存在小问题，图片不能插入在有文本的块中，否则会导致原文本被覆盖**！！！
