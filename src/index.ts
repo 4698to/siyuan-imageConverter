@@ -2,6 +2,7 @@ import {
   Plugin,
   showMessage,
   Menu,
+  getFrontend 
 } from "siyuan";
 import * as api from "./api";
 import "@/index.scss";
@@ -13,8 +14,7 @@ const STORAGE_NAME = "config";
 export default class PluginSample extends Plugin {
   private imageMap; // 新增图片映射表;
   private topBarMenu: Menu | null = null;
-  private closeMenuOnOutsideClick?: (event: MouseEvent) => void;
-  private closeMenuOnEsc?: (event: KeyboardEvent) => void;
+
   private currentRepoPath: string; // 当前仓库路径
   private imagesavepath: any; // 新增图片保存路径属性
   private settingUtils: SettingUtils;
@@ -23,7 +23,7 @@ export default class PluginSample extends Plugin {
   private resourceArchiveStatus = true; // 是否启用资源归档
   private deleteOriginalStatus = true; // 是否删除原图
   private currentPageId: string; //当前页面id
-
+  private isMobile: boolean; // 是否为移动端
   private options = {
     1: "webp",
     2: "avif",
@@ -48,110 +48,117 @@ export default class PluginSample extends Plugin {
       this.currentPageId = data.detail.protyle.block.rootID;
       await this.getImageSavePath(data.detail.protyle);
     });
+		//this.eventBus.on("open-menu-link", this.injectContextMenu); // 注入右键菜单
+		this.eventBus.on("open-menu-doctree", this.injectContextMenu);
+    //this.eventBus.on("open-menu-content",this.injectContextMenu); //笔记本上右键菜单
+    this.eventBus.on("click-editortitleicon",this.injectContextMenu); //文档右上角的 文件 按钮 菜单
+
+
+    const frontEnd = getFrontend();
+    this.isMobile = frontEnd === "mobile" || frontEnd === "browser-mobile";
+
     this.registerSettingUI();
     this.addClickTopBar();
   }
 
   private async addClickTopBar() {
-    this.addTopBar({
+    
+
+    const topBar = this.addTopBar({
       icon: "iconEmoji",
       title: this.i18n.topBarTitle,
-      position: 'right',
-      callback: async (event) => {
-        if (this.topBarMenu) {
-          this.closeTopBarMenu();
-          return;
+      position: "right",
+      callback: async () => {
+        if (this.isMobile) {
+          this.addMenu(null);
+        } else {
+          let rect = topBar.getBoundingClientRect();
+          // 如果被隐藏，则使用更多按钮
+          if (rect.width === 0) {
+              rect = document.querySelector("#barMore").getBoundingClientRect();
+          }
+          if (rect.width === 0) {
+              rect = document.querySelector("#barPlugins").getBoundingClientRect();
+          }
+          this.addMenu(rect);
         }
-
-        this.topBarMenu = new Menu("imageConverter", () => {
-          this.topBarMenu = null;
-          this.unbindTopBarMenuAutoClose();
-        });
-        this.topBarMenu.addItem({
-          icon: "iconImage",
-          label: this.i18n.compressImage,
-          click: async () => {
-            this.imageMap = [];
-            this.imageMap = await this.GetImageBlock(this.currentPageId);
-            if (this.imageConverterStatus) {
-              this.SwapAllImages();
-            } else {
-              this.swapAllImageSrc()
-            }
-            this.closeTopBarMenu();
-          }
-        });
-        this.topBarMenu.addItem({
-          icon: "iconFolder",
-          label: this.i18n.archiveImage,
-          click: async () => {
-            const previousImageConverterStatus = this.imageConverterStatus;
-            this.imageConverterStatus = false;
-            try {
-              this.imageMap = [];
-              this.imageMap = await this.GetImageBlock(this.currentPageId);
-              await this.swapAllImageSrc();
-            } finally {
-              this.imageConverterStatus = previousImageConverterStatus;
-              this.closeTopBarMenu();
-            }
-          }
-        });
-        const x = event?.clientX ?? window.innerWidth - 24;
-        const y = event?.clientY ?? 40;
-        this.topBarMenu.open({
-          x,
-          y,
-          isLeft: false
-        });
-        this.bindTopBarMenuAutoClose();
       },
     });
   }
-
-  private closeTopBarMenu() {
-    this.topBarMenu?.close();
-    this.topBarMenu = null;
-    this.unbindTopBarMenuAutoClose();
-  }
-
-  private unbindTopBarMenuAutoClose() {
-    if (this.closeMenuOnOutsideClick) {
-      document.removeEventListener("mousedown", this.closeMenuOnOutsideClick, true);
-      this.closeMenuOnOutsideClick = undefined;
-    }
-    if (this.closeMenuOnEsc) {
-      document.removeEventListener("keydown", this.closeMenuOnEsc, true);
-      this.closeMenuOnEsc = undefined;
-    }
-  }
-
-  private bindTopBarMenuAutoClose() {
-    if (this.closeMenuOnOutsideClick) {
-      document.removeEventListener("mousedown", this.closeMenuOnOutsideClick, true);
-    }
-    if (this.closeMenuOnEsc) {
-      document.removeEventListener("keydown", this.closeMenuOnEsc, true);
-    }
-
-    this.closeMenuOnOutsideClick = (ev: MouseEvent) => {
-      const target = ev.target as HTMLElement | null;
-      if (target?.closest(".b3-menu")) return;
-      this.closeTopBarMenu();
-    };
-    this.closeMenuOnEsc = (ev: KeyboardEvent) => {
-      if (ev.key === "Escape") {
-        this.closeTopBarMenu();
+  private injectContextMenu = ({detail}:any) => {
+   
+    detail.menu.addItem({
+      icon: "iconImage",
+      label: this.i18n.compressImage,
+      click: async () => {
+        this.imageMap = [];
+        this.imageMap = await this.GetImageBlock(this.currentPageId);
+        if (this.imageConverterStatus) {
+          this.SwapAllImages();
+        } else {
+          this.swapAllImageSrc()
+        }
       }
-    };
-
-    // 延后绑定，避免当前打开菜单的点击事件立刻触发关闭
-    setTimeout(() => {
-      if (!this.topBarMenu) return;
-      document.addEventListener("mousedown", this.closeMenuOnOutsideClick!, true);
-      document.addEventListener("keydown", this.closeMenuOnEsc!, true);
-    }, 0);
+    });
+    detail.menu.addItem({
+      icon: "iconFolder",
+      label: this.i18n.archiveImage,
+      click: async () => {
+        const previousImageConverterStatus = this.imageConverterStatus;
+        this.imageConverterStatus = false;
+        try {
+          this.imageMap = [];
+          this.imageMap = await this.GetImageBlock(this.currentPageId);
+          await this.swapAllImageSrc();
+        } finally {
+          this.imageConverterStatus = previousImageConverterStatus;
+        }
+      }
+    });
   }
+  public async addMenu(rect: any) {
+    this.topBarMenu = new Menu("imageConverter", () => {
+    });
+    this.topBarMenu.addItem({
+      icon: "iconImage",
+      label: this.i18n.compressImage,
+      click: async () => {
+        this.imageMap = [];
+        this.imageMap = await this.GetImageBlock(this.currentPageId);
+        if (this.imageConverterStatus) {
+          this.SwapAllImages();
+        } else {
+          this.swapAllImageSrc()
+        }
+      }
+    });
+
+    this.topBarMenu.addItem({
+      icon: "iconFolder",
+      label: this.i18n.archiveImage,
+      click: async () => {
+        const previousImageConverterStatus = this.imageConverterStatus;
+        this.imageConverterStatus = false;
+        try {
+          this.imageMap = [];
+          this.imageMap = await this.GetImageBlock(this.currentPageId);
+          await this.swapAllImageSrc();
+        } finally {
+          this.imageConverterStatus = previousImageConverterStatus;
+        }
+      }
+    });
+    if (this.isMobile) {
+      this.topBarMenu.fullscreen();
+    } else {
+      this.topBarMenu.open({
+        x: rect.x,
+        y: rect.y,
+        isLeft: false
+      });
+    }
+  }
+
 
   public async GetImageBlock(blockid) {
     var li = [];
