@@ -1,7 +1,8 @@
 {
-    "topBarTitle": "imageConverter One-click Convert Images",
+    "topBarTitle": "ImageConverter",
     "compressImage": "Convert Images",
     "archiveImage": "Archive Images",
+    "canlelArchive": "Cancel Archive",
     "readingImage": "Reading image ${index}",
     "readComplete": "Image reading completed",
     "compressingImage": "Compressing image ${index}",

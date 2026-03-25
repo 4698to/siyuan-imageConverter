@@ -33,7 +33,7 @@ export default class PluginSample extends Plugin {
   }
 
   async onload() {
-    console.log("插件加载成功");
+    //console.log("插件加载成功");
     this.imageMap = new Set();
     //获取仓库路径
     this.GetRepoPath();
@@ -86,8 +86,8 @@ export default class PluginSample extends Plugin {
     });
   }
   private injectContextMenu = ({detail}:any) => {
-   
-    detail.menu.addItem({
+    const submenu: any[] = [];
+    submenu.push({
       icon: "iconImage",
       label: this.i18n.compressImage,
       click: async () => {
@@ -100,7 +100,7 @@ export default class PluginSample extends Plugin {
         }
       }
     });
-    detail.menu.addItem({
+    submenu.push({
       icon: "iconFolder",
       label: this.i18n.archiveImage,
       click: async () => {
@@ -114,6 +114,18 @@ export default class PluginSample extends Plugin {
           this.imageConverterStatus = previousImageConverterStatus;
         }
       }
+    });
+    submenu.push({
+      icon: "iconUndo",
+      label: this.i18n.canlelArchive,
+      click: async () => {
+        await this.cancelArchiveCurrentDoc();
+      }
+    });
+    detail.menu.addItem({
+      icon: "iconEmoji",
+      title: this.i18n.topBarTitle,
+      submenu: submenu
     });
   }
   public async addMenu(rect: any) {
@@ -146,6 +158,13 @@ export default class PluginSample extends Plugin {
         } finally {
           this.imageConverterStatus = previousImageConverterStatus;
         }
+      }
+    });
+    this.topBarMenu.addItem({
+      icon: "iconUndo",
+      label: this.i18n.canlelArchive,
+      click: async () => {
+        await this.cancelArchiveCurrentDoc();
       }
     });
     if (this.isMobile) {
@@ -213,6 +232,68 @@ export default class PluginSample extends Plugin {
     })
     // console.log(li);
     return li;
+  }
+
+  private isLocalResourcePath(path: string): boolean {
+    const lowerPath = String(path || "").toLowerCase();
+    if (
+      lowerPath.startsWith("http://") ||
+      lowerPath.startsWith("https://") ||
+      lowerPath.startsWith("data:") ||
+      lowerPath.startsWith("file://")
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * 取消归档：把当前文档中归档到 this.imagesavepath 下的图片移动回 assets 根目录
+   * 仅处理本地资源，跳过网络图片
+   */
+  public async cancelArchiveCurrentDoc() {
+    const archivePrefix = (this.imagesavepath ? String(this.imagesavepath) : "").replace(/\/+$/, "") + "/";
+    if (!this.currentPageId || !archivePrefix || archivePrefix === "/") return;
+
+    const rows = await api.sql(`SELECT block_id, markdown FROM spans WHERE root_id='${this.currentPageId}'`);
+    if (!rows?.length) {
+      console.log("没有图片需要取消归档",this.currentPageId);
+      return;
+    }
+    console.log("需要取消归档的图片",rows,this.currentPageId);
+    // 确保 assets 根目录存在
+    await api.putFile("data/assets", true, null);
+
+    for (const row of rows) {
+      const md: string = row?.markdown || "";
+      const match = md.match(/!\[.*?\]\((.*?)\)/);
+      if (!match) continue;
+
+      const oldPath = match[1];
+      if (!this.isLocalResourcePath(oldPath)) continue;
+      const path_split = String(oldPath).split("/");
+      if (path_split.length < 3) continue;
+
+      //if (!oldPath.startsWith(archivePrefix)) continue;
+
+      const fileNameWithExt = path_split.pop() || "";
+      const newPath = `assets/${fileNameWithExt}`;
+
+      // 不改名：如遇同名冲突则跳过，避免覆盖
+      const existing = await api.getFileBlob("data/" + newPath);
+      if (existing) {
+        console.log("新路径已存在",newPath);
+        //continue;
+      }
+
+      await api.request("/api/file/renameFile", {
+        path: "data/" + oldPath,
+        newPath: "data/" + newPath,
+      });
+
+      const newMarkdown = md.replace(oldPath, newPath);
+      await api.updateBlock("markdown", newMarkdown, row.block_id);
+    }
   }
 
   public addImageToMap(suffix) {

@@ -1,7 +1,8 @@
 {
-    "topBarTitle": "imageConverter 一键转换图片",
+    "topBarTitle": "imageConverter转换图片",
     "compressImage": "压缩图片",
     "archiveImage": "归档图片",
+    "canlelArchive": "取消归档",
     "readingImage": "正在读取第 ${index} 张图片",
     "readComplete": "图片读取完成",
     "compressingImage": "正在压缩第 ${index} 张图片",
